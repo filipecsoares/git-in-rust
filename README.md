@@ -11,10 +11,6 @@ Currently, the project implements the following Git commands:
 
 Each command is implemented as a separate struct that implements a `Command` trait, following the strategy pattern. This design makes it easy to add new commands.
 
-## Disclaimer
-
-Please note that this is a simplified version and doesn't handle all the cases that a real Git implementation would need to handle. It's meant for educational purposes only.
-
 ## How to Run
 
 1. **Compile the Program**
@@ -46,6 +42,10 @@ Please note that this is a simplified version and doesn't handle all the cases t
     Replace {file-path} with the path to the file you want to stage.
 
 Please note that you need to have Rust and Cargo installed on your machine to compile and run the program. If you haven’t installed them yet, you can do so from the official Rust website.
+
+## Disclaimer
+
+Please note that this is a simplified version and doesn't handle all the cases that a real Git implementation would need to handle. It's meant for educational purposes only.
 
 ## Future Work
 
