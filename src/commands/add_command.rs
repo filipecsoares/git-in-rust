@@ -7,7 +7,7 @@ use crate::services::hash_service::hash;
 pub struct Add;
 
 impl Command for Add {
-    fn execute(&self, args: &[String]) {
+    fn execute(&self, args: &[String]) -> anyhow::Result<()> {
         let file_path = &args[2];
         if file_path == "." {
             for entry in WalkDir::new(".").into_iter().filter_map(|e| e.ok()) {
@@ -18,6 +18,7 @@ impl Command for Add {
         } else {
             stage_file(Path::new(file_path));
         }
+        Ok(())
     }
 }
 

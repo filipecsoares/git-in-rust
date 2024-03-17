@@ -1,13 +1,15 @@
 use std::path::Path;
 use std::fs;
+use anyhow::Ok;
+
 use crate::command::Command;
 
 pub struct Init;
 
 impl Command for Init {
-    fn execute(&self, _args: &[String]) {
+    fn execute(&self, _args: &[String]) -> anyhow::Result<()>{
         if Path::new(".git").exists() {
-            println!("The .git directory already exists.");
+            anyhow::bail!("The .git directory already exists.");
         } else {
             fs::create_dir(".git").expect("Could not create .git folder");
             fs::create_dir(".git/branches").expect("Could not create .git/branches folder");
@@ -24,5 +26,6 @@ impl Command for Init {
             fs::write(".git/description", "Unnamed repository; edit this file 'description' to name the repository.\n").expect("Could not create description file");
             println!("Initialized git directory");
         }
+        Ok(())
     }
 }
