@@ -8,6 +8,7 @@ Currently, the project implements the following Git commands:
 
 - `init`: Initializes a new Git repository.
 - `add`: Stages changes for the next commit.
+- `cat-file`: Print the file content (only work for blobs until now).
 
 Each command is implemented as a separate struct that implements a `Command` trait, following the strategy pattern. This design makes it easy to add new commands.
 

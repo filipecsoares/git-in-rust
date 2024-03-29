@@ -1,25 +1,51 @@
-use std::{io::Write, path::PathBuf};
-use flate2::read::ZlibDecoder;
+use std::{fs, io::Write, path::{Path, PathBuf}};
 use flate2::write::ZlibEncoder;
 use flate2::Compression;
 use sha1::{Digest, Sha1};
-use anyhow::{Context, Ok};
-
-use crate::command::Command;
+use anyhow::Context;
 
 pub struct HashObject;
 
-impl Command for HashObject {
-    fn execute(&self, args: &[String]) -> anyhow::Result<()> {
-        let file_path: PathBuf = (&args[0]).into();
-        let stat = std::fs::metadata(&file_path).with_context(|| format!("stat {}", file_path.display()))?;
+impl HashObject {
+    pub fn execute(write: bool, file: PathBuf) -> anyhow::Result<()> {
+        fn write_blob<W>(file: &Path, writer: W) -> anyhow::Result<String>
+            where
+                W: Write,
+            {
+                let stat =
+                    std::fs::metadata(&file).with_context(|| format!("stat {}", file.display()))?;
+                let writer = ZlibEncoder::new(writer, Compression::default());
+                let mut writer = HashWriter {
+                    writer,
+                    hasher: Sha1::new(),
+                };
+                write!(writer, "blob ")?;
+                write!(writer, "{}\0", stat.len())?;
+                let mut file = std::fs::File::open(&file)
+                    .with_context(|| format!("open {}", file.display()))?;
+                std::io::copy(&mut file, &mut writer).context("stream file into blob")?;
+                let _ = writer.writer.finish()?;
+                let hash = writer.hasher.finalize();
+                Ok(hex::encode(hash))
+            }
 
-        let mut e = ZlibEncoder::new(Vec::new(), Compression::default());
-        write!(e, "blob ")?;
-        write!(e, "{}\0", stat.len())?;
-        let compressed = e.finish();
-        let mut hasher = Sha1::new();
-        println!("Not Ready yet!");
+            let hash = if write {
+                let tmp = "temporary";
+                let hash = write_blob(
+                    &file,
+                    std::fs::File::create(tmp).context("construct temporary file for blob")?,
+                )
+                .context("write out blob object")?;
+                fs::create_dir_all(format!(".git/objects/{}/", &hash[..2]))
+                    .context("create subdir of .git/objects")?;
+                std::fs::rename(tmp, format!(".git/objects/{}/{}", &hash[..2], &hash[2..]))
+                    .context("move blob file into .git/objects")?;
+                hash
+            } else {
+                write_blob(&file, std::io::sink()).context("write out blob object")?
+            };
+
+            println!("{hash}");
 
         Ok(())
     }

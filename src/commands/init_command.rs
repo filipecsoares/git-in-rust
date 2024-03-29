@@ -2,12 +2,10 @@ use std::path::Path;
 use std::fs;
 use anyhow::Ok;
 
-use crate::command::Command;
-
 pub struct Init;
 
-impl Command for Init {
-    fn execute(&self, _args: &[String]) -> anyhow::Result<()>{
+impl Init {
+    pub fn execute() -> anyhow::Result<()>{
         if Path::new(".git").exists() {
             anyhow::bail!("The .git directory already exists.");
         } else {

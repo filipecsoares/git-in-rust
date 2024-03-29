@@ -1,14 +1,12 @@
 use walkdir::WalkDir;
 use std::path::Path;
 use std::fs;
-use crate::command::Command;
 use crate::services::hash_service::hash;
 
 pub struct Add;
 
-impl Command for Add {
-    fn execute(&self, args: &[String]) -> anyhow::Result<()> {
-        let file_path = &args[2];
+impl Add {
+    pub fn execute(file_path: &String) -> anyhow::Result<()> {
         if file_path == "." {
             for entry in WalkDir::new(".").into_iter().filter_map(|e| e.ok()) {
                 if entry.file_type().is_file() {
