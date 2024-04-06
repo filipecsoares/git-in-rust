@@ -4,6 +4,7 @@ pub mod services;
 
 use std::path::PathBuf;
 use clap::{Parser, Subcommand};
+use commands::ls_tree_command::LsTree;
 use crate::commands::init_command::Init;
 use crate::commands::add_command::Add;
 use crate::commands::commit_command::Commit;
@@ -24,10 +25,13 @@ fn main() -> anyhow::Result<()> {
             Commit::execute(&message)
         }
         CommandEnum::CatFile { pretty_print, object_hash } => {
-            CatFile::execute(pretty_print, object_hash)
+            CatFile::execute(pretty_print, &object_hash)
         }
         CommandEnum::HashObject { write, file } => {
             HashObject::execute(write, file)
+        }
+        CommandEnum::LsTree { name_only, tree_hash } => {
+            LsTree::execute(name_only, &tree_hash)
         }
         _ => {
             anyhow::bail!("Invalid command.")
