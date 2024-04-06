@@ -9,6 +9,8 @@ Currently, the project implements the following Git commands:
 - `init`: Initializes a new Git repository.
 - `add`: Stages changes for the next commit.
 - `cat-file`: Print the file content (only work for blobs until now).
+- `hash-object`: Creates a blob from a file, returning the blob's SHA1 hash.
+- `ls-tree`: Lists the contents of a tree object, like directories and files in the repository.
 
 Each command is implemented as a separate struct that implements a `Command` trait, following the strategy pattern. This design makes it easy to add new commands.
 
